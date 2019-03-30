@@ -1,0 +1,79 @@
+{
+  "name": "node-express-rest",
+  "version": "1.0.0",
+  "description": "This is a simple exploratory express js REST Service.",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/app.js",
+    "pretty": "prettier --write --tab-width 4 \"src/**/*.js\"",
+    "test": "jest --detectOpenHandles --forceExit",
+    "precommit": "lint-staged && npm test"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run pretty",
+      "git add"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "author": "Trabis Hutto",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "express-joi": "^0.3.1",
+    "joi": "^14.3.1",
+    "lodash.assignin": "^4.2.0",
+    "lodash.find": "^4.6.0",
+    "mongoose": "^5.4.19"
+  },
+  "nodemonConfig": {
+    "delay": "2500"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.2",
+    "babel-jest": "^24.5.0",
+    "babel-polyfill": "^6.26.0",
+    "eslint": "^5.15.3",
+    "husky": "^1.3.1",
+    "jest": "^24.5.0",
+    "lint-staged": "^8.1.5",
+    "mockgoose": "^8.0.1",
+    "nodemon": "^1.18.10",
+    "prettier": "1.16.4"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": true
+          }
+        }
+      ]
+    ]
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "eslintConfig": {
+    "plugins": [
+      "node",
+      "jest"
+    ],
+    "env": {
+      "jest/globals": true,
+      "node": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2018
+    }
+  }
+}
