@@ -1,38 +1,52 @@
 import { NoteModel } from "../models/note.model";
+import Joi from "joi";
 
-const get = async (request, h) => {
-    return "Hello, world!";
+const createNoteSchema = Joi.object().keys({
+    id: Joi.string().required(),
+    note: Joi.string().required(),
+    createDate: Joi.date()
+        .forbidden()
+        .default(new Date()),
+    archived: Joi.boolean().default(false)
+});
+
+const get = async (request, response) => {
+    response.send('Hello World!')
 };
 
-const getNotes = async (request, h) => {
-    request.logger.info("In GET Notes %s", request.path);
+const getNotes = async (request, response) => {
     const notesList = await NoteModel.find().exec();
     if (!notesList) {
         notesList = [];
     }
-    return {
+    response.status(200).json({
         totalCount: notesList.length,
         count: notesList.length,
         limit: notesList.length,
         offset: 0,
         notes: notesList
-    };
+    });
 };
 
-const getNote = async (request, h) => {
-    request.logger.info("In GET Note %s", request.path);
-    const note = NoteModel.findById(request.params.id).exec();
-    return note ? note : {};
+const getNote = async (request, response) => {
+    let note = {};
+    let status = 400;
+        if(request.params.id) {
+        status = 200;
+        note = await NoteModel.findById(request.params.id).exec();
+    }
+    response.status(status).json(note ? note : {});
 };
 
-const addNote = async (request, h) => {
-    request.logger.info("In POST Note %s", request.path);
+const addNote = async (request, response) => {
     try {
-        const note = new NoteModel(request.payload);
+        const validatedNote = await createNoteSchema.validate(request.body, {abortEarly: false});
+        const note = new NoteModel(validatedNote);
         const result = await note.save();
-        return result;
-    } catch (error) {
-        return error;
+        response.status(200).json(result);
+    } catch (validationError) {
+        const errorMessage = validationError.details.map(d => d.message);
+                response.status(400).json(errorMessage);
     }
 };
 

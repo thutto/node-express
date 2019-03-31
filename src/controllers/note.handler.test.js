@@ -10,6 +10,20 @@ let requestStub = {
     },
     path: "jest/test"
 };
+    const responseStub = {
+        statusCode: 200,
+        jsonObj: {},
+        sendStr: ""
+    };
+    responseStub.status = () => responseStub;
+    responseStub.send = (sendStr) => {
+        responseStub.sendStr = sendStr
+        return sendStr;
+    };
+    responseStub.json = (jsonObj) => {
+        responseStub.jsonObj = jsonObj
+        return jsonObj;
+    };
 let mongoId = "";
 
 // Build Up
@@ -27,32 +41,31 @@ describe("Test Note Handler", () => {
 
     test("Add Note", async () => {
         const addRequest = requestStub;
-        addRequest.payload = {
+        addRequest.body = {
             id: "1",
             note: "Test Note",
-            createDate: new Date(),
             archived: false
         };
-        const noteResponse = await NoteHandler.addNote(addRequest);
-        expect(noteResponse).toBeDefined();
-        expect(noteResponse._id).toBeDefined();
-        expect(noteResponse.note).toEqual("Test Note");
-        mongoId = noteResponse._id;
+        await NoteHandler.addNote(addRequest, responseStub);
+        expect(responseStub.jsonObj).toBeDefined();
+        expect(responseStub.jsonObj._id).toBeDefined();
+        expect(responseStub.jsonObj.note).toEqual("Test Note");
+        mongoId = responseStub.jsonObj._id;
     });
 
     test("Test Base GET", async () => {
-        const getResponse = await NoteHandler.get(requestStub);
-        expect(getResponse).toBeDefined();
-        expect(getResponse).toEqual("Hello, world!");
+        await NoteHandler.get(requestStub, responseStub);
+        expect(responseStub).toBeDefined();
+        expect(responseStub.sendStr).toEqual("Hello World!");
     });
 
     test("Got Notes Response", async () => {
-        const getResponse = await NoteHandler.getNotes(requestStub);
-        expect(getResponse).toBeDefined();
-        expect(getResponse.count).toBeDefined();
-        expect(getResponse.totalCount).toBeDefined();
-        expect(getResponse.notes).toBeDefined();
-        expect(getResponse.notes[0]._id).toBeDefined();
+        await NoteHandler.getNotes(requestStub, responseStub);
+        expect(responseStub).toBeDefined();
+        expect(responseStub.jsonObj.count).toBeDefined();
+        expect(responseStub.jsonObj.totalCount).toBeDefined();
+        expect(responseStub.jsonObj.notes).toBeDefined();
+        expect(responseStub.jsonObj.notes[0]._id).toBeDefined();
     });
 
     test("Got Note Response", async () => {
@@ -60,10 +73,10 @@ describe("Test Note Handler", () => {
         getRequest.params = {
             id: mongoId
         };
-        const getResponse = await NoteHandler.getNote(getRequest);
-        expect(getResponse).toBeDefined();
-        expect(getResponse._id).toBeDefined();
-        expect(getResponse.note).toBeDefined();
-        expect(getResponse.note).toEqual("Test Note");
+        await NoteHandler.getNote(getRequest, responseStub);
+        expect(responseStub).toBeDefined();
+        expect(responseStub.jsonObj._id).toBeDefined();
+        expect(responseStub.jsonObj.note).toBeDefined();
+        expect(responseStub.jsonObj.note).toEqual("Test Note");
     });
 });

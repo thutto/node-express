@@ -1,6 +1,6 @@
 # Hapi Node Rest
 
-This is a simple playground for me to explore Hapi JS, Node, and Mongo.
+This is a simple playground for me to explore Express JS, Node, and Mongo.
 
 ## Installation
 
@@ -15,6 +15,7 @@ npm start;
 ```
 
 ## TODO
+* Convert From Hapi to express.
 * Add Delete
 * Add Update
 * Add Search support
